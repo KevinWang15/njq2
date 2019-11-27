@@ -1,0 +1,15 @@
+{
+  "name": "njq2",
+  "version": "1.0.3",
+  "description": "",
+  "bin": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "url": "https://github.com/KevinWang15/njq2"
+  }
+}
