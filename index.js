@@ -1,6 +1,31 @@
 #!/usr/bin/env node
 const fs = require("fs");
 
+// patches array.filter so that when there's an uncaught exception in the callback function,
+// it simply returns false instead of crashing.
+//
+// this allows for a simpler .filter() call, without worrying about
+//   TypeError: Cannot read property 'xxx' of undefined
+// and other trivial errors
+(function PatchArrayFilter() {
+    let origArrayFilter = Array.prototype.filter;
+
+    function patchedArrayFilter(...arguments) {
+        // hook the filter function
+        let origFilterFunction = arguments[0];
+        arguments[0] = a => {
+            try {
+                return origFilterFunction(a)
+            } catch (e) {
+                return false;
+            }
+        }
+        return origArrayFilter.apply(this, arguments);
+    }
+
+    Array.prototype.filter = patchedArrayFilter;
+})();
+
 let expression = process.argv[2];
 if (!expression) {
     printUsage();
