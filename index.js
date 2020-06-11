@@ -1,5 +1,22 @@
 #!/usr/bin/env node
 const fs = require("fs");
+const {stdin} = process;
+
+const getStdin = async () => {
+    let result = '';
+
+    if (stdin.isTTY) {
+        return result;
+    }
+
+    stdin.setEncoding('utf8');
+
+    for await (const chunk of stdin) {
+        result += chunk;
+    }
+
+    return result;
+};
 
 (function main() {
     let expression = process.argv[2];
@@ -31,7 +48,7 @@ const fs = require("fs");
 
     patchArrayFilter();
 
-    getFiles().forEach(input => {
+    getFiles().then(input => input.forEach(input => {
         try {
             // try to parse input as JSON
             input = JSON.parse(input);
@@ -46,7 +63,7 @@ const fs = require("fs");
         } else {
             console.log(result);
         }
-    });
+    }));
 })();
 
 // patches array.filter so that when there's an uncaught exception in the callback function,
@@ -77,9 +94,9 @@ function patchArrayFilter() {
 
 function getFiles() {
     if (process.argv.length === 3) {
-        return [fs.readFileSync("/dev/stdin", "utf-8")]
+        return getStdin().then(data => [data])
     } else {
-        return process.argv.slice(3).map(path => fs.readFileSync(path, "utf-8"))
+        return Promise.resolve(process.argv.slice(3).map(path => fs.readFileSync(path, "utf-8")))
     }
 }
 
