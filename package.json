@@ -1,6 +1,6 @@
 {
   "name": "njq2",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "",
   "bin": "index.js",
   "scripts": {
@@ -13,6 +13,7 @@
     "url": "https://github.com/KevinWang15/njq2"
   },
   "dependencies": {
+    "json-merge-patch": "^1.0.0",
     "yaml": "^1.10.0"
   }
 }

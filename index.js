@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 const fs = require("fs");
 const yaml = require("yaml");
+const jsonmergepatch = require("json-merge-patch");
 const {stdin} = process;
+
+if (process.env["NJQ2_OUTPUT_FORMAT"] === "yaml" && typeof process.env["NJQ2_OUTPUT_DOCUMENT_SEPARATOR"] == "undefined") {
+    process.env["NJQ2_OUTPUT_DOCUMENT_SEPARATOR"] = "---\n"
+}
 
 const getStdin = async () => {
     let result = '';
@@ -26,6 +31,20 @@ const getStdin = async () => {
         process.exit(1);
     }
 
+    if (process.env["NJQ2_MODE"] === "JsonMergePatch") {
+        executeJsonMergePatch(expression).then(printResults);
+    } else {
+        executeQuery(expression).then(printResults);
+    }
+})();
+
+function executeJsonMergePatch(expression) {
+    return getAndParseFiles().then(files => files.map(input => {
+        return jsonmergepatch.apply(input, JSON.parse(expression));
+    }));
+}
+
+function executeQuery(expression) {
     // normalize expression
     expression = (() => {
         if (expression.startsWith(".[")) {
@@ -49,27 +68,27 @@ const getStdin = async () => {
 
     patchArrayFilter();
 
-    getFiles().then(input => input.forEach(input => {
-        try {
-            // try to parse input as JSON
-            if (process.env["NJQ2_MODE"] === "yaml") {
-                input = yaml.parse(input);
-            } else {
-                input = JSON.parse(input);
-            }
-        } catch {
-            // input is not a JSON, which is also fine and we leave it as is
-        }
+    return getAndParseFiles().then(files => files.map(input => {
+        return eval(`${expression}`);
+    }));
+}
 
-        // print the evaluation result to stdout
-        let result = eval(`${expression}`);
+function printResults(results) {
+    results.forEach((result, i) => {
         if (typeof result == "object") {
-            console.log(JSON.stringify(result, null, 4));
+            if (process.env["NJQ2_OUTPUT_FORMAT"] === "yaml") {
+                console.log(yaml.stringify(result, null, 4));
+            } else {
+                console.log(JSON.stringify(result, null, 4));
+            }
         } else {
             console.log(result);
         }
-    }));
-})();
+        if (i < results.length - 1 && process.env["NJQ2_OUTPUT_DOCUMENT_SEPARATOR"]) {
+            console.log(process.env["NJQ2_OUTPUT_DOCUMENT_SEPARATOR"]);
+        }
+    })
+}
 
 // patches array.filter so that when there's an uncaught exception in the callback function,
 // it simply returns false instead of crashing.
@@ -103,6 +122,22 @@ function getFiles() {
     } else {
         return Promise.resolve(process.argv.slice(3).map(path => fs.readFileSync(path, "utf-8")))
     }
+}
+
+function getAndParseFiles() {
+    return getFiles().then(files => files.map(input => {
+        try {
+            // try to parse input as JSON
+            if (process.env["NJQ2_INPUT_FORMAT"] === "yaml") {
+                return yaml.parse(input);
+            } else {
+                return JSON.parse(input);
+            }
+        } catch {
+            // input is not a JSON, which is also fine and we leave it as is
+            return input;
+        }
+    }))
 }
 
 function printUsage() {
