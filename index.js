@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const fs = require("fs");
+const yaml = require("yaml");
 const {stdin} = process;
 
 const getStdin = async () => {
@@ -51,7 +52,11 @@ const getStdin = async () => {
     getFiles().then(input => input.forEach(input => {
         try {
             // try to parse input as JSON
-            input = JSON.parse(input);
+            if (process.env["NJQ2_MODE"] === "yaml") {
+                input = yaml.parse(input);
+            } else {
+                input = JSON.parse(input);
+            }
         } catch {
             // input is not a JSON, which is also fine and we leave it as is
         }
