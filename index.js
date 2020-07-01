@@ -24,7 +24,7 @@ const getStdin = async () => {
     return result;
 };
 
-(function main() {
+((function main() {
     let expression = process.argv[2];
     if (!expression) {
         printUsage();
@@ -32,11 +32,14 @@ const getStdin = async () => {
     }
 
     if (process.env["NJQ2_MODE"] === "JsonMergePatch") {
-        executeJsonMergePatch(expression).then(printResults);
+        return executeJsonMergePatch(expression).then(printResults);
     } else {
-        executeQuery(expression).then(printResults);
+        return executeQuery(expression).then(printResults);
     }
-})();
+})()).catch(err => {
+    console.error(err);
+    process.exit(1);
+});
 
 function executeJsonMergePatch(expression) {
     return getAndParseFiles().then(files => files.map(input => {
