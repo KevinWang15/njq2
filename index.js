@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const JSON5 = require('json5')
 const fs = require("fs");
 const yaml = require("yaml");
 const jsonmergepatch = require("json-merge-patch");
@@ -43,7 +44,7 @@ const getStdin = async () => {
 
 function executeJsonMergePatch(expression) {
     return getAndParseFiles().then(files => files.map(input => {
-        return jsonmergepatch.apply(input, JSON.parse(expression));
+        return jsonmergepatch.apply(input, JSON5.parse(expression));
     }));
 }
 
@@ -134,7 +135,7 @@ function getAndParseFiles() {
             if (process.env["NJQ2_INPUT_FORMAT"] === "yaml") {
                 return yaml.parse(input);
             } else {
-                return JSON.parse(input);
+                return JSON5.parse(input);
             }
         } catch {
             // input is not a JSON, which is also fine and we leave it as is
