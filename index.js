@@ -9,6 +9,10 @@ if (process.env["NJQ2_OUTPUT_FORMAT"] === "yaml" && typeof process.env["NJQ2_OUT
     process.env["NJQ2_OUTPUT_DOCUMENT_SEPARATOR"] = "---\n"
 }
 
+function evalFile(path) {
+    return eval(fs.readFileSync(path, {encoding: "UTF-8"}));
+}
+
 const getStdin = async () => {
     let result = '';
 
