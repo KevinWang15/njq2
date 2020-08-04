@@ -2,6 +2,7 @@
 const JSON5 = require('json5')
 const fs = require("fs");
 const yaml = require("yaml");
+const rfc6902 = require("rfc6902");
 const jsonmergepatch = require("json-merge-patch");
 const {stdin} = process;
 
@@ -77,6 +78,16 @@ function executeQuery(expression) {
     patchArrayFilter();
 
     return getAndParseFiles().then(files => files.map(input => {
+        const pristineInput = JSON.parse(JSON.stringify(input));
+
+        function genJsonPatch(value) {
+            return rfc6902.createPatch(pristineInput, value);
+        }
+
+        function genJsonMergePatch(value) {
+            return jsonmergepatch.generate(pristineInput, value);
+        }
+
         return eval(`${expression}`);
     }));
 }
