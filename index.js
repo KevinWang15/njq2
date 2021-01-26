@@ -5,6 +5,7 @@ const yaml = require("yaml");
 const rfc6902 = require("rfc6902");
 const jsonmergepatch = require("json-merge-patch");
 const traverse = require("traverse");
+const clone = require("clone");
 const {stdin} = process;
 
 if (process.env["NJQ2_OUTPUT_FORMAT"] === "yaml" && typeof process.env["NJQ2_OUTPUT_DOCUMENT_SEPARATOR"] == "undefined") {
