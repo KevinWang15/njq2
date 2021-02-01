@@ -5,6 +5,8 @@ const yaml = require("yaml");
 const rfc6902 = require("rfc6902");
 const jsonmergepatch = require("json-merge-patch");
 const traverse = require("traverse");
+const lodash = require("lodash");
+const {get} = require("lodash");
 const clone = require("clone");
 const {stdin} = process;
 
