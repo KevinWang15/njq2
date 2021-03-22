@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const JSON5 = require('json5')
 const fs = require("fs");
-const yaml = require("yaml");
+const yaml = require("js-yaml");
 const rfc6902 = require("rfc6902");
 const jsonmergepatch = require("json-merge-patch");
 const traverse = require("traverse");
@@ -109,7 +109,7 @@ function printResults(results) {
     results.forEach((result, i) => {
         if (typeof result == "object") {
             if (process.env["NJQ2_OUTPUT_FORMAT"] === "yaml") {
-                console.log(yaml.stringify(result, {indentSeq: false, maxAliasCount: 0}).trim());
+                console.log(yaml.dump(result, JSON.parse(process.env["NJQ2_YAML_DUMP_OPTIONS"] || '{}')).trim());
             } else {
                 console.log(JSON.stringify(result, null, 4).trim());
             }
@@ -161,7 +161,7 @@ function getAndParseFiles() {
         try {
             // try to parse input as JSON
             if (process.env["NJQ2_INPUT_FORMAT"] === "yaml") {
-                return yaml.parse(input);
+                return yaml.load(input);
             } else {
                 return JSON5.parse(input);
             }
