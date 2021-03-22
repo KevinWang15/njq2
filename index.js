@@ -109,9 +109,9 @@ function printResults(results) {
     results.forEach((result, i) => {
         if (typeof result == "object") {
             if (process.env["NJQ2_OUTPUT_FORMAT"] === "yaml") {
-                console.log(yaml.stringify(result, {indentSeq: false}));
+                console.log(yaml.stringify(result, {indentSeq: false, maxAliasCount: 0}).trim());
             } else {
-                console.log(JSON.stringify(result, null, 4));
+                console.log(JSON.stringify(result, null, 4).trim());
             }
         } else {
             console.log(result);
