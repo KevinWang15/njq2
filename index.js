@@ -109,7 +109,7 @@ function printResults(results) {
     results.forEach((result, i) => {
         if (typeof result == "object") {
             if (process.env["NJQ2_OUTPUT_FORMAT"] === "yaml") {
-                console.log(yaml.stringify(result, null, 4));
+                console.log(yaml.stringify(result, {indentSeq: false}));
             } else {
                 console.log(JSON.stringify(result, null, 4));
             }
