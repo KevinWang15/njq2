@@ -10,6 +10,15 @@ const {get} = require("lodash");
 const clone = require("clone");
 const {stdin} = process;
 
+if (process.env["NJQ2_FORMAT"]) {
+    if (!process.env["NJQ2_INPUT_FORMAT"]) {
+        process.env["NJQ2_INPUT_FORMAT"] = process.env["NJQ2_FORMAT"];
+    }
+    if (!process.env["NJQ2_OUTPUT_FORMAT"]) {
+        process.env["NJQ2_OUTPUT_FORMAT"] = process.env["NJQ2_FORMAT"];
+    }
+}
+
 if (process.env["NJQ2_OUTPUT_FORMAT"] === "yaml" && typeof process.env["NJQ2_OUTPUT_DOCUMENT_SEPARATOR"] == "undefined") {
     process.env["NJQ2_OUTPUT_DOCUMENT_SEPARATOR"] = "---\n"
 }
