@@ -4,6 +4,6 @@
 
 njq2-w() {
   TMP=$(mktemp)
-  njq2 "$1;input" $2 > $TMP
+  njq2 "$(printf "%s;\ninput" $1)" $2 > $TMP
   mv $TMP $2
 }
